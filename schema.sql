@@ -1,1 +1,2 @@
 CREATE TABLE patients (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, email TEXT UNIQUE, phone TEXT);
+CREATE TABLE doctors (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, specialty TEXT, consultation_fee REAL);
