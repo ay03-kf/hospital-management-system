@@ -45,6 +45,47 @@ def list_patients():
     else:
         patients = conn.execute("SELECT * FROM patients").fetchall()
     conn.close()
+    return render_template('patient.html', patients=patients, search_query=search_query)
+
+@app.route('/patients/add', methods=['POST'])
+def add_patient():
+    name = request.form.get('name', '').strip()
+    email = request.form.get('email', '').strip()
+    phone = request.form.get('phone', '').strip()
+    
+    if not name or not email or not phone:
+        flash("All fields are required to add a patient.", "danger")
+        return redirect(url_for('list_patients'))
+    
+    conn = get_db_connection()
+    try:
+        conn.execute(
+            "INSERT INTO patient (name, email, phone) VALUES (?, ?, ?)", 
+            (name, email, phone)
+        )
+        conn.commit()
+        flash("Patient added successfully!", "success")
+    except sqlite3.IntegrityError:
+        flash("A patient with this email already exists.", "danger")
+    finally:
+        conn.close()
+        
+    return redirect(url_for('list_patients'))
+
+@app.route('/patients/edit/<int:id>', methods=['POST'])
+def edit_patient(id):
+    name = request.form.get('name', '').strip()
+    email = request.form.get('email', '').strip()
+    phone = request.form.get('phone', '').strip()
+    
+    if not name or not email or not phone:
+        flash("All fields are required to update a patient.", "danger")
+        return redirect(url_for('list_patients'))
+        
+    conn = get_db_connection()
+    try:
+        conn.execute(
+            "UPDATE patients SET name = ?, email = ?, phone = ? WHERE id = ?",
 
 if __name__ == '__main__':
     app.run(debug=True)
