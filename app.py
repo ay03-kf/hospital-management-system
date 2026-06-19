@@ -60,7 +60,7 @@ def add_patient():
     conn = get_db_connection()
     try:
         conn.execute(
-            "INSERT INTO patient (name, email, phone) VALUES (?, ?, ?)", 
+            "INSERT INTO patients (name, email, phone) VALUES (?, ?, ?)", 
             (name, email, phone)
         )
         conn.commit()
