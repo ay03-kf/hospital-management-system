@@ -86,6 +86,42 @@ def edit_patient(id):
     try:
         conn.execute(
             "UPDATE patients SET name = ?, email = ?, phone = ? WHERE id = ?",
+            (name, email, phone, id)
+        )
+        conn.commit()
+        flash("Patient updated successfully!", "success")
+    except sqlite3.IntegrityError:
+        flash("A patient with this email already exists.", "danger")
+    finally:
+        conn.close()
+        
+    return redirect(url_for('list_patients'))
+
+@app.route('/patients/delete/<int:id>', methods=['POST'])
+def delete_patient(id):
+    conn = get_db_connection()
+    conn.execute("DELETE FROM patients WHERE id = ?", (id,))
+    conn.commit()
+    conn.close()
+    flash("Patient deleted successfully!", "warning")
+    return redirect(url_for('list_patients'))
+
+@app.route('/doctors', methods=['GET'])
+def list_doctors():
+    search_query = request.args.get('search', '').strip()
+    conn = get_db_connection()
+    if search_query:
+        doctors = conn.execute(
+            "SELECT * FROM doctors WHERE name LIKE ? OR specialty LIKE ?", 
+            (f'%{search_query}%', f'%{search_query}%')
+        ).fetchall()
+    else:
+        doctors = conn.execute("SELECT * FROM doctors").fetchall()
+    conn.close()
+    return render_template('doctor.html', doctors=doctors, search_query=search_query)
+
+@app.route('/doctors/add', methods=['POST'])
+def add_doctor():
 
 if __name__ == '__main__':
     app.run(debug=True)
