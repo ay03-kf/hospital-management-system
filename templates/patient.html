@@ -42,7 +42,7 @@
                             <td>{{ patient.phone }}</td>
                             <td class="text-end">
                                 <!-- Trigger Edit Modal -->
-                                <button class="btn btn-sm btn-outline-secondary me-1" data-bs-toggle="modal" data-bs-target="#editModal-1">
+                                <button class="btn btn-sm btn-outline-secondary me-1" data-bs-toggle="modal" data-bs-target="#editModal-{{ patient.id }}">
                                     Edit
                                 </button>
                                 <!-- Delete Button -->
@@ -53,7 +53,7 @@
                         </tr>
 
                         <!-- Edit Patient Modal for Row -->
-                        <div class="modal fade" id="editModal-1" tabindex="-1" aria-labelledby="editModalLabel-{{ patient.id }}" aria-hidden="true">
+                        <div class="modal fade" id="editModal-{{ patient.id }}" tabindex="-1" aria-labelledby="editModalLabel-{{ patient.id }}" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
