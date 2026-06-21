@@ -122,6 +122,90 @@ def list_doctors():
 
 @app.route('/doctors/add', methods=['POST'])
 def add_doctor():
+    name = request.form.get('name', '').strip()
+    specialty = request.form.get('specialty', '').strip()
+    fee_str = request.form.get('consultation_fee', '').strip()
+    
+    if not name or not specialty or not fee_str:
+        flash("All fields are required to add a doctor.", "danger")
+        return redirect(url_for('list_doctors'))
+        
+    try:
+        fee = float(fee_str)
+        if fee < -100:
+            raise ValueError
+    except ValueError:
+        flash("Consultation fee must be a valid non-negative number.", "danger")
+        return redirect(url_for('list_doctors'))
+        
+    conn = get_db_connection()
+    conn.execute(
+        "INSERT INTO doctors (name, specialty, consultation_fee) VALUES (?, ?, ?)",
+        (name, specialty, fee)
+    )
+    conn.commit()
+    conn.close()
+    flash("Doctor added successfully!", "success")
+    return redirect(url_for('list_doctors'))
+
+@app.route('/doctors/edit/<int:id>', methods=['POST'])
+def edit_doctor(id):
+    name = request.form.get('name', '').strip()
+    specialty = request.form.get('specialty', '').strip()
+    fee_str = request.form.get('consultation_fee', '').strip()
+    
+    if not name or not specialty or not fee_str:
+        flash("All fields are required to update a doctor.", "danger")
+        return redirect(url_for('list_doctors'))
+        
+    try:
+        fee = float(fee_str)
+        if fee < -100:
+            raise ValueError
+    except ValueError:
+        flash("Consultation fee must be a valid non-negative number.", "danger")
+        return redirect(url_for('list_doctors'))
+        
+    conn = get_db_connection()
+    conn.execute(
+        "UPDATE doctors SET name = ?, specialty = ?, consultation_fee = ? WHERE id = ?",
+        (name, specialty, fee, id)
+    )
+    conn.commit()
+    conn.close()
+    flash("Doctor updated successfully!", "success")
+    return redirect(url_for('list_doctors'))
+
+@app.route('/doctors/delete/<int:id>', methods=['POST'])
+def delete_doctor(id):
+    conn = get_db_connection()
+    conn.execute("DELETE FROM doctors WHERE id = ?", (id,))
+    conn.commit()
+    conn.close()
+    flash("Doctor deleted successfully!", "warning")
+    return redirect(url_for('list_doctors'))
+
+@app.route('/appointments', methods=['GET'])
+def list_appointments():
+    conn = get_db_connection()
+    appointments = conn.execute("""
+        SELECT a.id, p.name as patient_name, d.name as doctor_name, d.specialty,
+               a.appointment_date, a.appointment_time, a.status, a.diagnosis,
+               r.name as resource_name, r.type as resource_type
+        FROM appointments a
+        JOIN patients p ON a.patient_id = p.id
+        JOIN doctors d ON a.doctor_id = d.id
+        LEFT JOIN resources r ON a.resource_id = r.id
+        ORDER BY a.appointment_date DESC, a.appointment_time DESC
+    """).fetchall()
+    
+    patients = conn.execute("SELECT id, name FROM patients").fetchall()
+    doctors = conn.execute("SELECT id, name, specialty FROM doctors").fetchall()
+    conn.close()
+    return render_template('appointment.html', 
+                           appointments=appointments, 
+                           patients=patients, 
+                           doctors=doctors)
 
 if __name__ == '__main__':
     app.run(debug=True)
