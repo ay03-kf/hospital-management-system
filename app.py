@@ -132,7 +132,7 @@ def add_doctor():
         
     try:
         fee = float(fee_str)
-        if fee < -100:
+        if fee < 0:
             raise ValueError
     except ValueError:
         flash("Consultation fee must be a valid non-negative number.", "danger")
@@ -160,7 +160,7 @@ def edit_doctor(id):
         
     try:
         fee = float(fee_str)
-        if fee < -100:
+        if fee < 0:
             raise ValueError
     except ValueError:
         flash("Consultation fee must be a valid non-negative number.", "danger")
@@ -206,6 +206,13 @@ def list_appointments():
                            appointments=appointments, 
                            patients=patients, 
                            doctors=doctors)
+
+@app.route('/appointments/book', methods=['POST'])
+def book_appointment():
+    patient_id = request.form.get('patient_id')
+    doctor_id = request.form.get('doctor_id')
+    app_date = request.form.get('appointment_date')
+    app_time = request.form.get('appointment_time')
 
 if __name__ == '__main__':
     app.run(debug=True)
