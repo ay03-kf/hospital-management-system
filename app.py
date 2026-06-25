@@ -213,6 +213,41 @@ def book_appointment():
     doctor_id = request.form.get('doctor_id')
     app_date = request.form.get('appointment_date')
     app_time = request.form.get('appointment_time')
+    resource_type = request.form.get('resource_type')
+    
+    if not patient_id or not doctor_id or not app_date or not app_time or not resource_type:
+        flash("All booking details are required.", "danger")
+        return redirect(url_for('list_appointments'))
+        
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("SELECT id FROM patients WHERE id = ?", (patient_id,))
+        if not cursor.fetchone():
+            flash("Error: Selected patient does not exist.", "danger")
+            return redirect(url_for('list_appointments'))
+            
+        cursor.execute("SELECT id FROM doctors WHERE id = ?", (doctor_id,))
+        if not cursor.fetchone():
+            flash("Error: Selected doctor does not exist.", "danger")
+            return redirect(url_for('list_appointments'))
+            
+        cursor.execute(
+            "SELECT id FROM appointments WHERE doctor_id = ? AND appointment_date = ? AND appointment_time = ? AND status != 'Cancelled'",
+            (doctor_id, app_date, app_time)
+        )
+        if cursor.fetchone():
+            flash("Error: Doctor already has an active appointment at this date and time.", "danger")
+            return redirect(url_for('list_appointments'))
+            
+        cursor.execute(
+            "SELECT id, name FROM resources WHERE type = ? AND is_available = 1 LIMIT 1",
+            (resource_type,)
+        )
+        resource = cursor.fetchone()
+        if not resource:
+            flash(f"Error: No available '{resource_type}' resource to allocate. Booking rejected.", "danger")
+            return redirect(url_for('list_appointments'))
 
 if __name__ == '__main__':
     app.run(debug=True)
