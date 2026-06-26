@@ -30,7 +30,7 @@ def init_db():
             doctors_data
         )
 
-        # TODO: Add resources
+        resources_data = [
             ("OPD Room 101", "Consultation Room", 200.0, 1),
             ("OPD Room 102", "Consultation Room", 200.0, 1),
             ("ECG Unit", "ECG Machine", 300.0, 1),
