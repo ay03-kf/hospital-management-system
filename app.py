@@ -259,7 +259,7 @@ def book_appointment():
         conn.commit()
         flash(f"Appointment booked successfully! Allocated: {resource['name']}", "success")
     except sqlite3.Error as e:
-        pass
+        conn.rollback()
         flash(f"Database error during transaction: {str(e)}", "danger")
     finally:
         conn.close()
