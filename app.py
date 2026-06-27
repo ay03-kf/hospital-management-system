@@ -248,6 +248,36 @@ def book_appointment():
         if not resource:
             flash(f"Error: No available '{resource_type}' resource to allocate. Booking rejected.", "danger")
             return redirect(url_for('list_appointments'))
+            
+        resource_id = resource['id']
+        cursor.execute("UPDATE resources SET is_available = 0 WHERE id = ?", (resource_id,))
+        
+        cursor.execute(
+            "INSERT INTO appointments (patient_id, doctor_id, appointment_date, appointment_time, resource_id, status) VALUES (?, ?, ?, ?, ?, 'Scheduled')",
+            (patient_id, doctor_id, app_date, app_time, resource_id)
+        )
+        conn.commit()
+        flash(f"Appointment booked successfully! Allocated: {resource['name']}", "success")
+    except sqlite3.Error as e:
+        pass
+        flash(f"Database error during transaction: {str(e)}", "danger")
+    finally:
+        conn.close()
+    return redirect(url_for('list_appointments'))
+
+@app.route('/appointments/complete/<int:id>', methods=['POST'])
+def complete_appointment(id):
+    diagnosis = request.form.get('diagnosis', '').strip()
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("SELECT resource_id FROM appointments WHERE id = ?", (id,))
+        appointment = cursor.fetchone()
+        if not appointment:
+            flash("Appointment not found.", "danger")
+            return redirect(url_for('list_appointments'))
+            
+        resource_id = appointment['resource_id']
 
 if __name__ == '__main__':
     app.run(debug=True)
