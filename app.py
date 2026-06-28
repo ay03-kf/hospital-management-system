@@ -353,6 +353,61 @@ def show_bill(id):
                a.appointment_date, a.status
         FROM appointments a
         JOIN patients p ON a.patient_id = p.id
+        JOIN doctors d ON a.doctor_id = d.id
+        LEFT JOIN resources r ON a.resource_id = r.id
+        WHERE a.id = ?
+    """, (id,)).fetchone()
+    conn.close()
+    
+    if not bill_info:
+        flash("Bill details not found.", "danger")
+        return redirect(url_for('list_appointments'))
+        
+    consultation_fee = bill_info['consultation_fee']
+    resource_cost = bill_info['cost_per_use'] if bill_info['cost_per_use'] is not None else 0.0
+    total_bill = int(consultation_fee) + int(resource_cost)
+    return render_template('bill.html', bill=bill_info, total_bill=total_bill)
+
+@app.route('/admin/analytics', methods=['GET'])
+def admin_analytics():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    appointments_per_doctor = cursor.execute("""
+        SELECT d.id, d.name, d.specialty, COUNT(a.id) as appointment_count
+        FROM doctors d
+        LEFT JOIN appointments a ON d.id = a.doctor_id
+        GROUP BY d.id, d.name, d.specialty
+        ORDER BY appointment_count DESC
+    """).fetchall()
+    
+    resource_allocations = cursor.execute("""
+        SELECT r.id, r.name, r.type, COUNT(a.id) as allocation_count
+        FROM resources r
+        LEFT JOIN appointments a ON r.id = a.resource_id
+        GROUP BY r.id, r.name, r.type
+        ORDER BY allocation_count DESC
+    """).fetchall()
+    
+    completed_count = cursor.execute(
+        "SELECT COUNT(*) FROM appointments WHERE status = 'Completed'"
+    ).fetchone()[0]
+    
+    cancelled_count = cursor.execute(
+        "SELECT COUNT(*) FROM appointments WHERE status = 'Cancelled'"
+    ).fetchone()[0]
+    
+    scheduled_count = cursor.execute(
+        "SELECT COUNT(*) FROM appointments WHERE status = 'Scheduled'"
+    ).fetchone()[0]
+    
+    total_revenue_row = cursor.execute("""
+        SELECT SUM(d.consultation_fee + COALESCE(r.cost_per_use, 0.0))
+        FROM appointments a
+        JOIN doctors d ON a.doctor_id = d.id
+        LEFT JOIN resources r ON a.resource_id = r.id
+        WHERE a.status = 'Completed'
+    """).fetchone()
 
 if __name__ == '__main__':
     app.run(debug=True)

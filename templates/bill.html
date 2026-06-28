@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <!-- Invoice Card -->
+        <div class="card bg-white p-5 border shadow-sm invoice-print-box">
+            
+            <!-- Invoice Header -->
+            <div class="d-flex justify-content-between align-items-center border-bottom pb-4 mb-4">
+                <div>
+                    <h3 class="fw-bold text-primary mb-1">V Care Hospital</h3>
+                    <p class="text-muted small mb-0">Danish Kunj, Kolar Road, Bhopal <br> Phone: 98765-43210 | V Care Portal</p>
+                </div>
+                <div class="text-end">
+                    <h4 class="fw-bold text-secondary mb-1">INVOICE</h4>
+                    <span class="badge bg-light text-dark border">No. #{{ bill.id }}</span>
+                </div>
+            </div>
+
+            <!-- Patient and Bill Info -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <h6 class="text-muted text-uppercase small font-monospace">Patient Details</h6>
+                    <h5 class="fw-bold mb-1">{{ bill.patient_name }}</h5>
+                    <p class="text-muted small mb-0">Email: {{ bill.patient_email }}</p>
+                </div>
+                <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                    <h6 class="text-muted text-uppercase small font-monospace">Appointment Date</h6>
+                    <p class="fw-semibold mb-1">{{ bill.appointment_date }}</p>
+                    <span class="badge bg-success">Status: Paid</span>
+                </div>
+            </div>
+
+            <!-- Invoice Particulars Table -->
+            <div class="table-responsive mb-4">
+                <table class="table border">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Particulars / Description</th>
+                            <th>Provider / Details</th>
+                            <th class="text-end">Fee / Cost</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Doctor consultation row -->
+                        <tr>
+                            <td>
+                                <strong>Doctor Consultation</strong>
+                                <div class="text-muted small">Professional check-up fee</div>
+                            </td>
+                            <td>Dr. {{ bill.doctor_name.replace('Dr. ', '') }} ({{ bill.specialty }})</td>
+                             <td class="text-end fw-semibold">${{ "%.2f" | format(bill.consultation_fee) }}</td>
+                        </tr>
+                        
+                        <!-- Resource allocation row -->
+                        {% if bill.resource_name %}
+                            <tr>
+                                <td>
+                                    <strong>Resource Allocation</strong>
+                                    <div class="text-muted small">{{ bill.resource_type }} usage charge</div>
+                                </td>
+                                <td>{{ bill.resource_name }}</td>
+                                 <td class="text-end fw-semibold">${{ "%.2f" | format(bill.cost_per_use) }}</td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td>
+                                    <strong>Resource Allocation</strong>
+                                    <div class="text-muted small">No specific resource was assigned</div>
+                                </td>
+                                <td>None</td>
+                                 <td class="text-end fw-semibold">$0.00</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Billing Totals -->
+            <div class="row justify-content-end mb-4">
+                <div class="col-md-5">
+                    <div class="d-flex justify-content-between border-bottom pb-2">
+                        <span class="text-muted">Subtotal</span>
+                        <span class="fw-semibold">${{ "%.2f" | format(total_bill) }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between border-bottom py-2">
+                        <span class="text-muted">Tax (0%)</span>
+                        <span class="fw-semibold">$0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between pt-2">
+                        <span class="h5 fw-bold text-dark mb-0">Total Bill</span>
+                        <span class="h5 fw-bold text-primary mb-0">${{ "%.2f" | format(total_bill) }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Print & Navigation Actions -->
+            <div class="d-flex justify-content-between align-items-center mt-5 pt-3 border-top d-print-none">
+                <a href="{{ url_for('list_appointments') }}" class="btn btn-outline-secondary">
+                    &larr; Back to Desk
+                </a>
+                <button onclick="window.print();" class="btn btn-primary">
+                    🖨️ Print Invoice
+                </button>
+            </div>
+            
+        </div>
+    </div>
+</div>
+{% endblock %}
