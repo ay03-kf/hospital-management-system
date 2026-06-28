@@ -278,6 +278,81 @@ def complete_appointment(id):
             return redirect(url_for('list_appointments'))
             
         resource_id = appointment['resource_id']
+        cursor.execute(
+            "UPDATE appointments SET status = 'Completed', diagnosis = ? WHERE id = ?",
+            (diagnosis, id)
+        )
+        if resource_id:
+            cursor.execute("UPDATE resources SET is_available = 1 WHERE id = ?", (resource_id,))
+        conn.commit()
+        flash("Appointment marked as Completed. Bill generated below.", "success")
+        return redirect(url_for('show_bill', id=id))
+    except sqlite3.Error as e:
+        conn.rollback()
+        flash(f"Error updating appointment: {str(e)}", "danger")
+    finally:
+        conn.close()
+    return redirect(url_for('list_appointments'))
+
+@app.route('/appointments/cancel/<int:id>', methods=['POST'])
+def cancel_appointment(id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("SELECT resource_id, status FROM appointments WHERE id = ?", (id,))
+        app_record = cursor.fetchone()
+        if not app_record:
+            flash("Appointment not found.", "danger")
+            return redirect(url_for('list_appointments'))
+            
+        if app_record['status'] == 'Cancelled':
+            flash("Appointment is already cancelled.", "warning")
+            return redirect(url_for('list_appointments'))
+            
+        resource_id = app_record['resource_id']
+        cursor.execute("UPDATE appointments SET status = 'Cancelled' WHERE id = ?", (id,))
+        if resource_id:
+            cursor.execute("UPDATE resources SET is_available = 1 WHERE id = ?", (resource_id,))
+        conn.commit()
+        flash("Appointment successfully cancelled and resource released.", "info")
+    except sqlite3.Error as e:
+        conn.rollback()
+        flash(f"Error cancelling appointment: {str(e)}", "danger")
+    finally:
+        conn.close()
+    return redirect(url_for('list_appointments'))
+
+@app.route('/resources', methods=['GET'])
+def list_resources():
+    conn = get_db_connection()
+    resources = conn.execute("SELECT * FROM resources").fetchall()
+    conn.close()
+    return render_template('resource.html', resources=resources)
+
+@app.route('/resources/toggle/<int:id>', methods=['POST'])
+def toggle_resource(id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT is_available FROM resources WHERE id = ?", (id,))
+    res = cursor.fetchone()
+    if res:
+        new_val = 0 if res['is_available'] == 1 else 1
+        cursor.execute("UPDATE resources SET is_available = ? WHERE id = ?", (new_val, id))
+        conn.commit()
+        flash("Resource status updated.", "success")
+    conn.close()
+    return redirect(url_for('list_resources'))
+
+@app.route('/appointments/bill/<int:id>', methods=['GET'])
+def show_bill(id):
+    conn = get_db_connection()
+    bill_info = conn.execute("""
+        SELECT a.id, p.name as patient_name, p.email as patient_email,
+               d.name as doctor_name, d.specialty, d.consultation_fee,
+               r.name as resource_name, r.type as resource_type, r.cost_per_use,
+               a.appointment_date, a.status
+        FROM appointments a
+        JOIN patients p ON a.patient_id = p.id
 
 if __name__ == '__main__':
     app.run(debug=True)
