@@ -365,7 +365,7 @@ def show_bill(id):
         
     consultation_fee = bill_info['consultation_fee']
     resource_cost = bill_info['cost_per_use'] if bill_info['cost_per_use'] is not None else 0.0
-    total_bill = int(consultation_fee) + int(resource_cost)
+    total_bill = consultation_fee + resource_cost
     return render_template('bill.html', bill=bill_info, total_bill=total_bill)
 
 @app.route('/admin/analytics', methods=['GET'])
