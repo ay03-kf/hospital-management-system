@@ -408,6 +408,15 @@ def admin_analytics():
         LEFT JOIN resources r ON a.resource_id = r.id
         WHERE a.status = 'Completed'
     """).fetchone()
+    total_revenue = total_revenue_row[0] if total_revenue_row[0] is not None else 0.0
+    conn.close()
+    return render_template('analytics.html',
+                           appointments_per_doctor=appointments_per_doctor,
+                           resource_allocations=resource_allocations,
+                           completed_count=completed_count,
+                           cancelled_count=cancelled_count,
+                           scheduled_count=scheduled_count,
+                           total_revenue=total_revenue)
 
 if __name__ == '__main__':
     app.run(debug=True)
