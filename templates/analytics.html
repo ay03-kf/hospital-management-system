@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h4 class="fw-bold mb-1 text-secondary">Admin Analytics</h4>
+        <p class="text-muted">Stats and performance counters.</p>
+    </div>
+</div>
+
+<!-- Key Aggregate Statistics (Cards) -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card bg-white p-3 text-center border-bottom border-4 border-success">
+            <h6 class="text-uppercase text-muted small fw-semibold">Completed Visits</h6>
+            <h2 class="fw-bold mb-0 text-success">{{ completed_count }}</h2>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-white p-3 text-center border-bottom border-4 border-warning">
+            <h6 class="text-uppercase text-muted small fw-semibold">Scheduled / Pending</h6>
+            <h2 class="fw-bold mb-0 text-warning">{{ scheduled_count }}</h2>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-white p-3 text-center border-bottom border-4 border-danger">
+            <h6 class="text-uppercase text-muted small fw-semibold">Cancelled Visits</h6>
+            <h2 class="fw-bold mb-0 text-danger">{{ cancelled_count }}</h2>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-white p-3 text-center border-bottom border-4 border-primary">
+            <h6 class="text-uppercase text-muted small fw-semibold">Total Revenue (Completed)</h6>
+            <h2 class="fw-bold mb-0 text-primary">${{ "%.2f" | format(total_revenue) }}</h2>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Appointments per Doctor Table -->
+    <div class="col-md-6">
+        <div class="card bg-white p-4 h-100 border">
+            <h5 class="fw-bold mb-3 text-secondary">Appointments per Doctor</h5>
+            <div class="table-responsive">
+                <table class="table table-sm table-striped border">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Doctor</th>
+                            <th>Specialty</th>
+                            <th class="text-end">Appointments Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if appointments_per_doctor %}
+                            {% for record in appointments_per_doctor %}
+                                <tr>
+                                    <td class="fw-semibold">Dr. {{ record.name.replace('Dr. ', '') }}</td>
+                                    <td>{{ record.specialty }}</td>
+                                    <td class="text-end fw-bold text-secondary">{{ record.appointment_count }}</td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="3" class="text-center py-3 text-muted">No records available.</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="form-text mt-auto text-muted">
+                Appointments booked for each doctor.
+            </div>
+        </div>
+    </div>
+
+    <!-- Resource Allocation Table -->
+    <div class="col-md-6">
+        <div class="card bg-white p-4 h-100 border">
+            <h5 class="fw-bold mb-3 text-secondary">Resource Usage Count</h5>
+            <div class="table-responsive">
+                <table class="table table-sm table-striped border">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Resource</th>
+                            <th>Type</th>
+                            <th class="text-end">Allocations</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if resource_allocations %}
+                            {% for record in resource_allocations %}
+                                <tr>
+                                    <td class="fw-semibold">{{ record.name }}</td>
+                                    <td>{{ record.type }}</td>
+                                    <td class="text-end fw-bold text-secondary">{{ record.allocation_count }}</td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="3" class="text-center py-3 text-muted">No records available.</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="form-text mt-auto text-muted">
+                Total number of allocations per resource.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
