@@ -39,7 +39,7 @@ def list_patients():
     conn = get_db_connection()
     if search_query:
         patients = conn.execute(
-            "SELECT * FROM patients WHERE name LIKE ? OR email LIKE ?", 
+            "SELECT * FROM patients WHERE name = ? OR email LIKE ?", 
             (f'%{search_query}%', f'%{search_query}%')
         ).fetchall()
     else:
@@ -112,7 +112,7 @@ def list_doctors():
     conn = get_db_connection()
     if search_query:
         doctors = conn.execute(
-            "SELECT * FROM doctors WHERE name LIKE ? OR specialty LIKE ?", 
+            "SELECT * FROM doctors WHERE name = ? OR specialty LIKE ?", 
             (f'%{search_query}%', f'%{search_query}%')
         ).fetchall()
     else:
