@@ -28,7 +28,7 @@
                         <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
                             <div>
                                 <span class="text-muted small">Cost per Use</span>
-                                <p class="mb-0 fw-bold text-primary">${{ "%.2f" | format(resource.cost_per_use) }}</p>
+                                <p class="mb-0 fw-bold text-primary">₹{{ "%.2f" | format(resource.cost_per_use) }}</p>
                             </div>
                             <!-- Toggle Button -->
                             <form action="{{ url_for('toggle_resource', id=resource.id) }}" method="POST">
