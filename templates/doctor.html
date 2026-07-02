@@ -39,7 +39,7 @@
                             <td>{{ doctor.id }}</td>
                             <td class="fw-semibold">Dr. {{ doctor.name.replace('Dr. ', '') }}</td>
                             <td>{{ doctor.specialty }}</td>
-                            <td>${{ "%.2f" | format(doctor.consultation_fee) }}</td>
+                            <td>₹{{ "%.2f" | format(doctor.consultation_fee) }}</td>
                             <td class="text-end">
                                 <!-- Trigger Edit Modal -->
                                 <button class="btn btn-sm btn-outline-secondary me-1" data-bs-toggle="modal" data-bs-target="#editModal-{{ doctor.id }}">
@@ -71,7 +71,7 @@
                                                 <input type="text" name="specialty" class="form-control" value="{{ doctor.specialty }}" required>
                                             </div>
                                             <div class="mb-3">
-                                                <label class="form-label">Consultation Fee ($)</label>
+                                                <label class="form-label">Consultation Fee (₹)</label>
                                                 <input type="number" step="0.01" min="0" name="consultation_fee" class="form-control" value="{{ doctor.consultation_fee }}" required>
                                             </div>
                                         </div>
@@ -114,7 +114,7 @@
                         <input type="text" name="specialty" class="form-control" placeholder="e.g. Cardiology" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Consultation Fee ($)</label>
+                        <label class="form-label">Consultation Fee (₹)</label>
                         <input type="number" step="0.01" min="0" name="consultation_fee" class="form-control" placeholder="e.g. 500.00" required>
                     </div>
                 </div>
