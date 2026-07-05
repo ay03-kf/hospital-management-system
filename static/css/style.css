@@ -1,2 +1,51 @@
-/* main.css */
-body { background: #f8f9fa; }
+/* Custom styles for Hospital Resource & Appointment Management System */
+
+/* Table styles */
+.table-hover tbody tr:hover {
+    background-color: #f1f3f5;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.footer {
+    margin-top: auto;
+}
+
+.navbar-brand {
+    letter-spacing: 0.5px;
+}
+
+.card {
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.table {
+    vertical-align: middle;
+}
+
+/* Printable Invoice Styles */
+@media print {
+    /* Table styles */
+.table-hover tbody tr:hover {
+    background-color: #f1f3f5;
+}
+
+body {
+        background-color: white !important;
+        color: black !important;
+    }
+    .navbar, footer, .btn {
+        display: none !important;
+    }
+    .card {
+        box-shadow: none !important;
+        border: 1px solid #dee2e6 !important;
+    }
+}
