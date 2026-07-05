@@ -1,10 +1,5 @@
 /* Custom styles for Hospital Resource & Appointment Management System */
 
-/* Table styles */
-.table-hover tbody tr:hover {
-    background-color: #f1f3f5;
-}
-
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     min-height: 100vh;
@@ -13,6 +8,8 @@ body {
 }
 
 .footer {
+    padding-top: 15px;
+
     margin-top: auto;
 }
 
@@ -32,12 +29,7 @@ body {
 
 /* Printable Invoice Styles */
 @media print {
-    /* Table styles */
-.table-hover tbody tr:hover {
-    background-color: #f1f3f5;
-}
-
-body {
+    body {
         background-color: white !important;
         color: black !important;
     }
