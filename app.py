@@ -193,7 +193,7 @@ def list_appointments():
                a.appointment_date, a.appointment_time, a.status, a.diagnosis,
                r.name as resource_name, r.type as resource_type
         FROM appointments a
-        JOIN patients p ON a.patient_id = p.id
+          JOIN patients p ON a.patient_id = p.id
         JOIN doctors d ON a.doctor_id = d.id
         LEFT JOIN resources r ON a.resource_id = r.id
         ORDER BY a.appointment_date DESC, a.appointment_time DESC
@@ -352,7 +352,7 @@ def show_bill(id):
                r.name as resource_name, r.type as resource_type, r.cost_per_use,
                a.appointment_date, a.status
         FROM appointments a
-        JOIN patients p ON a.patient_id = p.id
+          JOIN patients p ON a.patient_id = p.id
         JOIN doctors d ON a.doctor_id = d.id
         LEFT JOIN resources r ON a.resource_id = r.id
         WHERE a.id = ?
