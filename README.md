@@ -1,3 +1,3 @@
 # Hospital System
 
-Initial repository set up.
+DBMS Project setup instructions.
