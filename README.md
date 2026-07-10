@@ -9,7 +9,7 @@ A web application designed for hospital resource tracking, appointment schedulin
 - **Billing Summary**: Automatically generates a bill combining the doctor's fee and resource usage cost upon checkup completion.
 - **Admin Dashboard**: Shows real-time statistics including appointments count per doctor and resource usage count using SQL aggregation queries.
 
-## Architecture & Tech Stack
+## Tech Stack
 - **Backend**: Python, Flask, raw SQLite3
 - **Frontend**: HTML5, Bootstrap 5, Custom CSS
 
